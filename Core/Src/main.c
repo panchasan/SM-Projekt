@@ -54,7 +54,7 @@
 /* USER CODE BEGIN PV */
 
 char buffor[100];
-
+char rx_buffer[15];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,8 +65,22 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart == &huart3)
+	{
+ 	 HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_buffer, 4);
+	}
+ }
 
-/* USER CODE END 0 */
+ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+ {
+	 if(huart == &huart3){
+		 HAL_UART_Transmit_IT(&huart3, (uint8_t*)rx_buffer, 4);
+	 }
+ }
+
+ /* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -108,7 +122,7 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI4_Init();
   /* USER CODE BEGIN 2 */
-  int8_t rslt;
+   int8_t rslt;
     struct bmp280_config conf;
 
     rslt = bmp280_init(&bmp280_1);
@@ -135,6 +149,8 @@ int main(void)
     /* Always set the power mode after setting the configuration */
     rslt = bmp280_set_power_mode(BMP280_NORMAL_MODE, &bmp280_1);
 
+    /* Receive massage about value of temperature */
+    HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_buffer, 4);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -147,7 +163,13 @@ int main(void)
 	  rslt = bmp280_get_comp_temp_32bit(&temp32, bmp280_1_data.uncomp_temp, &bmp280_1);
 
 	  rslt = bmp280_get_comp_temp_double(&temp, bmp280_1_data.uncomp_temp, &bmp280_1);
+	  temperature = (float)temp32*0.01;
 
+	  /* Sending the temperature measured by the sensor
+	   * Maciej jak już bedziesz miał to LCD to tuaj możesz tego sprintf uzyc bu jakoś pokaza cstopnie celcjusza
+	   * */
+	  //sprintf((char*)buffor, "Temperatura: %.2f \r\n", temperature);
+	  //HAL_UART_Transmit(&huart3, (uint8_t*)buffor, strlen(buffor), 1000);
 
 	  bmp280_1.delay_ms(1000);
 
