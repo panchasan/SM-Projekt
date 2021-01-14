@@ -42,6 +42,11 @@
 #define BMP280_SPI (&hspi4)
 #define BMP280_CS1 1
 #define BMP280_CS2 2
+
+#define enc_counter_max 3999  // max temperature
+#define enc_counter_min 1499   // min temperature
+#define enc_counter_step 25   // step of temperature 0.25degree
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -55,6 +60,9 @@
 
 char buffor[100];
 char rx_buffer[15];
+
+
+uint32_t enc_counter = enc_counter_min;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,6 +73,8 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+/* Usart */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart == &huart3)
@@ -79,6 +89,22 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 		 HAL_UART_Transmit_IT(&huart3, (uint8_t*)rx_buffer, 4);
 	 }
  }
+
+ /* Encoder */
+  void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+  {
+  	if(GPIO_Pin == ENC_CLK_Pin)
+  	{
+  		if(HAL_GPIO_ReadPin(ENC_DT_GPIO_Port, ENC_DT_Pin) == GPIO_PIN_RESET)
+  		{
+  			enc_counter = (enc_counter >= enc_counter_max) ? enc_counter_max: (enc_counter + enc_counter_step);
+  		}
+  		else
+  		{
+  			enc_counter = (enc_counter <= enc_counter_min) ? enc_counter_min: (enc_counter - enc_counter_step);
+  		}
+  	}
+  }
 
  /* USER CODE END 0 */
 
@@ -166,8 +192,10 @@ int main(void)
 	  temperature = (float)temp32*0.01;
 
 	  /* Sending the temperature measured by the sensor
-	   * Maciej jak już bedziesz miał to LCD to tuaj możesz tego sprintf uzyc bu jakoś pokaza cstopnie celcjusza
-	   * */
+	  	   * Maciej jak już bedziesz miał to LCD to tuaj możesz tego sprintf uzyc bu jakoś pokaza cstopnie celcjusza
+	  	   * zmienna temperatura to jest ta z czujnika, ona ma postać XX.XXstopni, np 25.02 stopnia
+	  	   * */
+
 	  //sprintf((char*)buffor, "Temperatura: %.2f \r\n", temperature);
 	  //HAL_UART_Transmit(&huart3, (uint8_t*)buffor, strlen(buffor), 1000);
 
