@@ -27,9 +27,22 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "bmp280.h"
-#include "bmp280_defs.h"
-#include "bmp280_config.h"
+/***********Komponenty***********/
+#include "Components/bmp280.h"
+#include "Components/bmp280_defs.h"
+#include "Components/bmp280_config.h"
+
+#include "Components/lcd_config.h"
+#include "Components/lcd.h"
+
+#include "Components/fan.h"
+#include "Components/fan_config.h"
+
+#include "Components/heater.h"
+#include "Components/heater_config.h"
+
+/***********Biblioteki***********/
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,6 +70,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
+//struct lcd_disp disp;
 
 char buffor[100];
 char rx_buffer[15];
@@ -106,7 +121,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
   	}
   }
 
- /* USER CODE END 0 */
+/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -117,7 +132,8 @@ int main(void)
   /* USER CODE BEGIN 1 */
 	struct bmp280_uncomp_data bmp280_1_data;
 
-	int32_t temp32, temp32_2;
+	int32_t temp32=0;
+	int32_t temp32_2=0;
 	double temp;
 	float temperature;
 
@@ -148,6 +164,8 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI4_Init();
   /* USER CODE BEGIN 2 */
+
+
    int8_t rslt;
     struct bmp280_config conf;
 
@@ -177,6 +195,14 @@ int main(void)
 
     /* Receive massage about value of temperature */
     HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_buffer, 4);
+
+    /*Inicjazlicaja LCD*/
+    LCD_Init(&hlcd);
+    /*Inicjazlicaja Grzałki*/
+    HEATER_Init(&hheater1);
+    /*Inicjazlicaja Wiatraka*/
+    FAN_Init(&hfan1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -200,7 +226,17 @@ int main(void)
 	  //HAL_UART_Transmit(&huart3, (uint8_t*)buffor, strlen(buffor), 1000);
 
 	  bmp280_1.delay_ms(1000);
-
+	  //Wyświetlacz LCD
+	  sprintf((char*)hlcd.FirstLine, "Temp. : %.2f", temperature);
+	  LCD_Display(&hlcd);
+	  /* Przykłady ustawinaia
+	   *
+	   * Ustawianie grzałkaki
+	   *HEATER_SetDuty(&hheater1, 50) na 50%
+	   *
+	   *Ustawienie wiatraka
+	   *HEATER_SetDuty(&hheater1,50) na 50%
+	   */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

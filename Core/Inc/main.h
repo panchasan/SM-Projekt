@@ -167,10 +167,10 @@ void Error_Handler(void);
 #define LED_RGB_CH_R_GPIO_Port GPIOB
 #define LD2_Pin GPIO_PIN_7
 #define LD2_GPIO_Port GPIOB
-#define BH1750_SCL_Pin GPIO_PIN_8
-#define BH1750_SCL_GPIO_Port GPIOB
-#define BH1750_SDA_Pin GPIO_PIN_9
-#define BH1750_SDA_GPIO_Port GPIOB
+#define LCD_SCL_Pin GPIO_PIN_8
+#define LCD_SCL_GPIO_Port GPIOB
+#define LCD_SDA_Pin GPIO_PIN_9
+#define LCD_SDA_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

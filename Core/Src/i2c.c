@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * File Name          : I2C.c
-  * Description        : This file provides code for the configuration
-  *                      of the I2C instances.
+  * @file    i2c.c
+  * @brief   This file provides code for the configuration
+  *          of the I2C instances.
   ******************************************************************************
   * @attention
   *
@@ -73,9 +73,9 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
     PB8     ------> I2C1_SCL
     PB9     ------> I2C1_SDA
     */
-    GPIO_InitStruct.Pin = BH1750_SCL_Pin|BH1750_SDA_Pin;
+    GPIO_InitStruct.Pin = LCD_SCL_Pin|LCD_SDA_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -103,9 +103,9 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
     PB8     ------> I2C1_SCL
     PB9     ------> I2C1_SDA
     */
-    HAL_GPIO_DeInit(BH1750_SCL_GPIO_Port, BH1750_SCL_Pin);
+    HAL_GPIO_DeInit(LCD_SCL_GPIO_Port, LCD_SCL_Pin);
 
-    HAL_GPIO_DeInit(BH1750_SDA_GPIO_Port, BH1750_SDA_Pin);
+    HAL_GPIO_DeInit(LCD_SDA_GPIO_Port, LCD_SDA_Pin);
 
   /* USER CODE BEGIN I2C1_MspDeInit 1 */
 
