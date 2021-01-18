@@ -1,0 +1,2 @@
+heater.c:10:6:HEATER_Init	16	static
+heater.c:14:6:HEATER_SetDuty	24	static

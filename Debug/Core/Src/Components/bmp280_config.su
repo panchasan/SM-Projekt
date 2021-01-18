@@ -1,0 +1,3 @@
+bmp280_config.c:67:8:BMP280_Init	24	static
+bmp280_config.c:110:8:bmp280_spi_reg_write	56	static
+bmp280_config.c:157:8:bmp280_spi_reg_read	88	static
