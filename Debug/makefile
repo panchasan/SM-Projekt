@@ -10,6 +10,7 @@ RM := rm -rf
 -include sources.mk
 -include Drivers/STM32F7xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
+-include Core/Src/Components/subdir.mk
 -include Core/Src/subdir.mk
 -include subdir.mk
 -include objects.mk
@@ -28,6 +29,11 @@ endif
 
 -include ../makefile.defs
 
+BUILD_ARTIFACT_NAME := Projekt
+BUILD_ARTIFACT_EXTENSION := elf
+BUILD_ARTIFACT_PREFIX := 
+BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME).$(BUILD_ARTIFACT_EXTENSION)
+
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
 Projekt.elf \
@@ -43,11 +49,14 @@ Projekt.bin \
 
 
 # All Target
-all: Projekt.elf secondary-outputs
+all: main-build
+
+# Main-build Target
+main-build: Projekt.elf secondary-outputs
 
 # Tool invocations
-Projekt.elf: $(OBJS) $(USER_OBJS) G:\Github\SM-Projekt\STM32F746ZGTX_FLASH.ld
-	arm-none-eabi-gcc -o "Projekt.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"G:\Github\SM-Projekt\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Projekt.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Projekt.elf: $(OBJS) $(USER_OBJS) C:\Users\MacBook\ (Ziober)\Desktop\Studia_projekty\SM\Projekt\STM32F746ZGTX_FLASH.ld
+	arm-none-eabi-gcc -o "Projekt.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\MacBook (Ziober)\Desktop\Studia_projekty\SM\Projekt\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Projekt.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -73,7 +82,14 @@ clean:
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
-.PHONY: all clean dependents
+fail-specified-linker-script-missing:
+	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
+	@exit 2
+
+warn-no-linker-script-specified:
+	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
+
+.PHONY: all clean dependents fail-specified-linker-script-missing warn-no-linker-script-specified
 .SECONDARY:
 
 -include ../makefile.targets
